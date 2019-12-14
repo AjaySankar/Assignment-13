@@ -3,25 +3,27 @@ import Filters from './Filters'
 import ProductTable from './ProductTable'
 import ProductForm from './ProductForm'
 
-let PRODUCTS = {
-    '1': {id: 1, category: 'Music', price: '$459.99', name: 'Clarinet'},
-    '2': {id: 2, category: 'Music', price: '$5,000', name: 'Cello'},
-    '3': {id: 3, category: 'Music', price: '$3,500', name: 'Tuba'},
-    '4': {id: 4, category: 'Furniture', price: '$799', name: 'Chaise Lounge'},
-    '5': {id: 5, category: 'Furniture', price: '$1,300', name: 'Dining Table'},
-    '6': {id: 6, category: 'Furniture', price: '$100', name: 'Bean Bag'}
-};
+//let PRODUCTS = {};
 
 class Products extends Component {
     constructor(props) {
         super(props)
         this.state = {
             filterText: '',
-            products: PRODUCTS
+            products: {},
+            formData: {}
         }
         this.handleFilter = this.handleFilter.bind(this)
         this.handleDestroy = this.handleDestroy.bind(this)
         this.handleSave = this.handleSave.bind(this)
+        this.handleEdit = this.handleEdit.bind(this)
+    }
+
+    componentDidMount() {
+        fetch('http://localhost:3000/products/get')
+        .then(response => response.json())
+        .then(json => this.setState({products: json}))
+        .catch(error => console.log(error))
     }
 
     handleFilter(filterInput) {
@@ -29,22 +31,50 @@ class Products extends Component {
     }
 
     handleSave(product) {
-        if (!product.id) {
-            product.id = new Date().getTime()
+        if (!product.productid) {
+            product.productid = new Date().getTime()
         }
-        this.setState((prevState) => {
-            let products = prevState.products
-            products[product.id] = product
-            return { products }
+        fetch('http://localhost:3000/products/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(product)
         })
+        .then(() => {
+            this.setState((prevState) => {
+                let products = prevState.products
+                products[product.productid] = product
+                return { products }
+            })
+        })
+        .catch(error => console.log(error))
     }
 
     handleDestroy(productId) {
-        this.setState((prevState) => {
-            let products = prevState.products
-            delete products[productId]
-            return { products }
-        });
+        window.console.log('In handle destroy ' + productId)
+        fetch(`http://localhost:3000/products/delete/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: productId})
+        })
+        .then(() => {
+            this.setState((prevState) => {
+                let products = prevState.products
+                delete products[productId]
+                return { products }
+            });
+        })
+        .catch(error => console.log(error))
+    }
+
+    handleEdit(productId) {
+        window.console.log(productId)
+        this.setState((prevState) => ({
+            formData: prevState.products[productId] || {}
+        }));
     }
 
     render () {
@@ -56,9 +86,10 @@ class Products extends Component {
                 <ProductTable 
                     products={this.state.products}
                     filterText={this.state.filterText}
+                    onEdit={this.handleEdit}
                     onDestroy={this.handleDestroy}></ProductTable>
                 <ProductForm
-                    onSave={this.handleSave}></ProductForm>
+                    formInput={this.state.formData} onSave={this.handleSave}></ProductForm>
             </div>
         )
     }

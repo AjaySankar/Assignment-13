@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-const RESET_VALUES = {id: '', category: '', price: '', name: ''}
+const RESET_VALUES = {productid: '', category: '', price: '', name: ''}
 
 class ProductForm extends Component {
     constructor(props) {
@@ -8,7 +8,7 @@ class ProductForm extends Component {
         this.handleChange = this.handleChange.bind(this)
         this.handleSave = this.handleSave.bind(this)
         this.state = {
-            product: Object.assign({}, RESET_VALUES),
+            product: Object.assign({}, this.props.formInput, RESET_VALUES),
             errors: {}
         }
     }

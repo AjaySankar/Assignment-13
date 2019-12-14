@@ -1,0 +1,59 @@
+var express = require('express')
+var app = express()
+var bodyParser = require('body-parser')
+var mongoose = require('mongoose')
+
+const dbURL = 'mongodb+srv://Ajay:1234567890@cluster0-i7qlr.mongodb.net/test?retryWrites=true&w=majority'
+
+app.use(express.static(__dirname))
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
+const Product = mongoose.model('product', {
+  productid: { type: Number, default: Date.now },
+  category: { type: String, default: '' },
+  price: { type: Number, default: 0 },
+  name: { type: String, default: '' },
+  instock: {type: Boolean, default: true}
+})
+
+app.get('/products/get', (req, res) => {
+  Product.find({}, (error, products) => {
+    res.send(products)
+  })
+})
+
+app.post('/products/create', (req, res) => {
+  const product = new Product(req.body)
+  product.save((error) => {
+    if(error) {
+      res.sendStatus(500)
+    }
+    else {
+      res.sendStatus(200)
+    }
+  })
+})
+
+app.post('/products/delete/:productId', (req, res) => {
+  const productId = req.params.productId || ''
+  Product.deleteOne({productid: productId}, (error) => {
+    if(error) {
+      res.sendStatus(500)
+    }
+    else {
+      res.sendStatus(200)
+    }
+  })
+})
+
+mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true}, (error) => {
+  console.log('MongoDB database connection', error)
+})
+
+var server = app.listen(3000, () => {
+  console.log('Server is listening on the port', server.address().port)
+})
