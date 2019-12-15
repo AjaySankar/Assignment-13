@@ -5,7 +5,7 @@ var app = express();
 
 app.use(bodyParser.json());
 
-var dbPath = 'mongodb+srv://vinay:user@catalog-lywdw.mongodb.net/test?retryWrites=true&w=majority';
+var dbPath = 'mongodb+srv://Ajay:123456@catalog-lywdw.mongodb.net/test?retryWrites=true&w=majority';
 
 var Product = mongoose.model('product', {
     product: {
