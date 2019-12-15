@@ -71,10 +71,10 @@ class Products extends Component {
     }
 
     handleEdit(productId) {
-        window.console.log(productId)
-        this.setState((prevState) => ({
-            formData: prevState.products[productId] || {}
-        }));
+        const editedProduct = this.state.products.find(p => p.productid === productId)
+        this.setState({
+            formData: editedProduct
+        });
     }
 
     render () {

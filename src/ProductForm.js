@@ -8,7 +8,7 @@ class ProductForm extends Component {
         this.handleChange = this.handleChange.bind(this)
         this.handleSave = this.handleSave.bind(this)
         this.state = {
-            product: Object.assign({}, this.props.formInput, RESET_VALUES),
+            product: Object.assign({}, RESET_VALUES),
             errors: {}
         }
     }
@@ -17,7 +17,6 @@ class ProductForm extends Component {
         const target = e.target
         const value = target.value
         const name = target.name
-    
         this.setState((prevState) => {
             prevState.product[name] = value
             return { product: prevState.product }
