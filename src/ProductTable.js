@@ -5,15 +5,15 @@ class ProductTable extends Component {
     constructor(props) {
         super(props)
         this.handleDestroy = this.handleDestroy.bind(this)
-        this.handleEdit = this.handleEdit.bind(this)
+        this.handleModify = this.handleModify.bind(this)
     }
 
     handleDestroy(id) {
         this.props.onDestroy(id)
     }
 
-    handleEdit(id) {
-        this.props.onEdit(id)
+    handleModify(id) {
+        this.props.onModify(id)
     }
     
     render () {
@@ -27,23 +27,25 @@ class ProductTable extends Component {
             rows.push (
                 <ProductRow 
                     product={product} 
-                    key={product.productid}
-                    onEdit={this.handleEdit}
-                    onDestroy={this.handleDestroy}></ProductRow>
+                    key={product.productid} 
+                    onDestroy={this.handleDestroy}
+                    onModify={this.handleModify}>
+
+                </ProductRow>
             )
         })
 
         return (
             <div>
-                <table class="table table-striped table-sm">
-                    <thead class="thead-dark">
+                <table className="table table-striped table-sm">
+                    <thead className="thead-dark">
                         <tr>
                             <th>Name</th>
                             <th>Category</th>
                             <th>Price</th>
-                            <th>In Stock</th>
-                            <th>&nbsp;</th>
-                            <th>&nbsp;</th>
+                            <th>Stock Status</th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>

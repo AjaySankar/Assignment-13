@@ -1,59 +1,81 @@
-var express = require('express')
-var app = express()
-var bodyParser = require('body-parser')
-var mongoose = require('mongoose')
+var express = require('express');
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var app = express();
 
-const dbURL = 'mongodb+srv://Ajay:1234567890@cluster0-i7qlr.mongodb.net/test?retryWrites=true&w=majority'
+app.use(bodyParser.json());
 
-app.use(express.static(__dirname))
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+var dbPath = 'mongodb+srv://vinay:user@catalog-lywdw.mongodb.net/test?retryWrites=true&w=majority';
 
-// parse application/json
-app.use(bodyParser.json())
+var Product = mongoose.model('product', {
+    product: {
+        productid: Number,
+        category: String,
+        price: String,
+        name: String,
+        instock: Boolean
+    },
+    id : Number
+});
 
-const Product = mongoose.model('product', {
-  productid: { type: Number, default: Date.now },
-  category: { type: String, default: '' },
-  price: { type: Number, default: 0 },
-  name: { type: String, default: '' },
-  instock: {type: Boolean, default: true}
-})
+mongoose.connect(dbPath, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false}, (err) => {
+    console.log("Mongodb connection", err);
+});
 
-app.get('/products/get', (req, res) => {
-  Product.find({}, (error, products) => {
-    res.send(products)
-  })
-})
+/**
+ * Get All products from the database
+ */
+app.get('/product/get/', async (req, res) => {
+    var products = {};
+    var data = await Product.find({});
+    data.forEach((value) => {
+        products[value.id] = value.product;
+    });
+    res.send(products);
+});
 
-app.post('/products/create', (req, res) => {
-  const product = new Product(req.body)
-  product.save((error) => {
-    if(error) {
-      res.sendStatus(500)
+/**
+ * Create and Insert a product to database
+ */
+app.post('/product/create/', async (req, res) => {
+    try{
+        var product = new Product(req.body);
+        await product.save();
+        console.log("Saved");
+        res.sendStatus(200);
+
+    }catch (error) {
+        res.sendStatus(500);
     }
-    else {
-      res.sendStatus(200)
-    }
-  })
-})
+});
 
-app.post('/products/delete/:productId', (req, res) => {
-  const productId = req.params.productId || ''
-  Product.deleteOne({productid: productId}, (error) => {
-    if(error) {
-      res.sendStatus(500)
+/**
+ * Update given product
+ */
+app.put('/product/update/:id', async (req, res) => {
+    try{
+        var reqestId = req.params.id;
+        console.log(req.body)
+        await Product.findOneAndUpdate({id: reqestId}, req.body);
+        res.sendStatus(200);   
+    }catch (error) {
+        console.log(error);
+        res.sendStatus(500);
     }
-    else {
-      res.sendStatus(200)
-    }
-  })
-})
 
-mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true}, (error) => {
-  console.log('MongoDB database connection', error)
-})
 
-var server = app.listen(3000, () => {
-  console.log('Server is listening on the port', server.address().port)
-})
+});
+
+/**
+ * Delete the given product
+ */
+app.delete('/product/delete/:id', async (req, res) => {
+    var reqestId = req.params.id;
+    await Product.findOneAndDelete({id: reqestId});
+    res.sendStatus(200);
+});
+
+
+app.listen(4000, () => {
+    console.log('server is listening in 4000');
+});
