@@ -50,6 +50,18 @@ app.post('/products/delete/:productId', (req, res) => {
   })
 })
 
+app.post('/products/update/:productId', (req, res) => {
+  const productId = req.params.productId || ''
+  Product.updateOne({productid: productId}, (error) => {
+    if(error) {
+      res.sendStatus(500)
+    }
+    else {
+      res.sendStatus(200)
+    }
+  })
+})
+
 mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true}, (error) => {
   console.log('MongoDB database connection', error)
 })
