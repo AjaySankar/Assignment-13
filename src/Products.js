@@ -33,22 +33,40 @@ class Products extends Component {
     handleSave(product) {
         if (!product.productid) {
             product.productid = new Date().getTime()
-        }
-        fetch('http://localhost:3000/products/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(product)
-        })
-        .then(() => {
-            this.setState((prevState) => {
-                let products = prevState.products
-                products[product.productid] = product
-                return { products }
+            fetch('http://localhost:3000/products/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(product)
             })
-        })
-        .catch(error => console.log(error))
+            .then(() => {
+                this.setState((prevState) => {
+                    let products = prevState.products
+                    products[product.productid] = product
+                    return { products }
+                })
+            })
+            .catch(error => console.log(error))
+        }
+        else {
+            fetch(`http://localhost:3000/products/update/${product.productid}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(product)
+            })
+            .then(() => {
+                this.setState((prevState) => {
+                    let products = prevState.products
+                    const pId = Object.entries(products).find(([key, prod]) => prod.productid === product.productid)[0]
+                    products[pId] = product
+                    return { products }
+                })
+            })
+            .catch(error => console.log(error))
+        }
     }
 
     handleDestroy(productId) {
