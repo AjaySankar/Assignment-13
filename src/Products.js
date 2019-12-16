@@ -11,7 +11,7 @@ class Products extends Component {
         this.state = {
             filterText: '',
             products: {},
-            formData: {}
+            formData: null
         }
         this.handleFilter = this.handleFilter.bind(this)
         this.handleDestroy = this.handleDestroy.bind(this)
@@ -62,7 +62,9 @@ class Products extends Component {
                     let products = prevState.products
                     const pId = Object.entries(products).find(([key, prod]) => prod.productid === product.productid)[0]
                     products[pId] = product
-                    return { products }
+                    let formData = prevState.formData
+                    formData = null
+                    return { products, formData }
                 })
             })
             .catch(error => console.log(error))
@@ -70,7 +72,7 @@ class Products extends Component {
     }
 
     handleDestroy(productId) {
-        window.console.log('In handle destroy ' + productId)
+        //window.console.log('In handle destroy ' + productId)
         fetch(`http://localhost:3000/products/delete/${productId}`, {
             method: 'POST',
             headers: {

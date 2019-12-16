@@ -52,9 +52,9 @@ app.post('/products/delete/:productId', (req, res) => {
 
 app.post('/products/update/:productId', (req, res) => {
   const productId = req.params.productId || ''
-  console.log('To be updated product id ' + productId)
+  //console.log('To be updated product id ' + productId)
   const product = new Product(req.body)
-  console.log('Requested update ' + JSON.stringify(req.body))
+  //console.log('Requested update ' + JSON.stringify(req.body))
   Product.updateOne({productid: productId}, req.body, (error) => {
     if(error) {
       console.log(error)
